@@ -1,5 +1,5 @@
 # quickstart-minio
-A quickstart guide for using minio.  Also works as a quickstart guide for S3.  Documented with working code that you can easily runanywhere on any computer that can run Docker.
+A quickstart guide for using minio.  Also works as a quickstart guide for S3.  Documented with working code that you can easily run anywhere on any computer that can run Docker.
 
 ## Running the quickstart
 1.  Install [Docker](https://docs.docker.com/engine/installation/) and bash.  (Only Windows users need worry about bash).
