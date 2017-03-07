@@ -1,0 +1,39 @@
+{
+  "name": "cdn_test_app",
+  "version": "1.0.0",
+  "description": "cdn test on docker",
+  "author": "Pa Sa  <coldsponger@gmail.com>",
+  "main": "test.js",
+  "scripts": {
+    "start": "DEBUG=* DEBUG_FD=1 node_modules/.bin/tape",
+    "test":  "DEBUG=* DEBUG_FD=1 node_modules/.bin/tape"
+  },
+  "devDependencies": {
+    "leaked-handles": "^5.2.0",
+    "tape": "^4.2.2",
+    "blue-tape": "^1.0.0",
+    "supertest": "^2.0.1",
+    "supertest-as-promised": "^4.0.2",
+    "eslint": "^3.12.2"
+  },
+  "dependencies": {
+    "express": "^4.14.0",
+    "cors": "^2.8.1",
+    "body-parser": "^1.15.2",
+    "connect-ensure-login": "^0.1.1",
+    "cookie-parser": "^1.4.3",
+    "ejs": "^2.5.2",
+    "connect-redis": "^3.1.0",
+    "express-bunyan-logger": "^1.3.1",
+    "bunyan": "^1.8.5",
+    "ioredis": "^2.4.0",
+    "random-js": "^1.0.8",
+    "jsonlint": "^1.6.2",
+    "lodash": "^4.17.4",
+    "minio": "^3.1.1",
+    "superagent": "^3.4.1",
+    "superagent-promise": "^1.1.0",
+    "stream-to-promise": "^2.2.0",
+    "bluebird": "^3.4.7"
+  }
+}

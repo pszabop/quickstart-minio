@@ -1,0 +1,10 @@
+tests=${@:-"test/*.js"}
+echo tests=$tests
+docker build -t quickstart-minio .
+echo "$@"
+rm -rf minio/export/*
+docker run -p 9000:9000 --name minioTest   -e "MINIO_ACCESS_KEY=quickstart"   -e "MINIO_SECRET_KEY=quickstart"   -v `pwd`/minio/export:/export   -v `pwd`/minio/config:/root/.minio minio/minio server /export > minio.log  &
+sleep 3; # XXX this should be a healthcheck
+docker run --link minioTest -it --name quickstart-minio quickstart-minio npm run test '--' "$tests"
+docker rm quickstart-minio 
+docker rm -f minioTest
