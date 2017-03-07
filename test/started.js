@@ -13,11 +13,11 @@ const streamToPromise = require('stream-to-promise');
 const agent = request;
 
 var minio = new Minio.Client({
-    endPoint: 'miniotest',
-    port: 9000,
-    secure: false,
-    accessKey: 'quickstart',
-    secretKey: 'quickstart'
+  endPoint: 'miniotest',      // https://github.com/minio/minio-js/issues/542
+  port: 9000,
+  secure: false,
+  accessKey: 'quickstart',
+  secretKey: 'quickstart'
 });
 
 // ugh minio does not comply with node callback standards...
