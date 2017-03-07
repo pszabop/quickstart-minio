@@ -2,7 +2,7 @@
 A get-started guide for using minio.  Documented with working code that you can easily run
 anywhere on any computer that can run Docker.
 
-## Running the example code
+## Running the quickstart
 1.  Install docker and bash.  (Only Windows users need worry about bash).
 2.  git clone this repository to a sandbox
 3.  execute './quickstart'.  This will download and create any required docker images, and execute the example test code.
