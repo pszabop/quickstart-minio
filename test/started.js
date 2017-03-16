@@ -13,15 +13,17 @@ const streamToPromise = require('stream-to-promise');
 const agent = request;
 
 var minio = new Minio.Client({
-  endPoint: 'miniotest',      // https://github.com/minio/minio-js/issues/542
+  endPoint: 'miniotest',      // XXX BUG https://github.com/minio/minio-js/issues/542
   port: 9000,
   secure: false,
   accessKey: 'quickstart',
   secretKey: 'quickstart'
 });
 
-// ugh minio does not comply with node callback standards...
+// NOTE:  minio does not comply with node callback standards...
 // will need to use this with .spread()
+// http://bluebirdjs.com/docs/api/promise.promisify.html
+// http://bluebirdjs.com/docs/api/spread.html
 minio.presignedPostPolicyAsync = Promise.promisify(
     minio.presignedPostPolicy,
     { multiArgs: true,
@@ -31,14 +33,15 @@ minio.presignedPostPolicyAsync = Promise.promisify(
 const bucket = 'test';
 
  
-test('should be able to upload a file', function(assert) {
+test('upload a file', function(assert) {
 
   const file = 'test/data/test.txt';
   var chksum;
 
+  // NOTE:  makeBucket is not idempotent, calling it again throws an error
   return minio.makeBucketAsync(bucket, 'us-east-1')
   .then(r =>  {
-    // note that r is undefined, no return value for makeBucket...
+    // NOTE: r is undefined, no return value for makeBucket...
     assert.pass('bucket created successfully with no errors');
     return minio.fPutObjectAsync(bucket, 'test.txt', file, 'application/octet-stream');
   }).then(etag => {
@@ -52,13 +55,14 @@ test('should be able to upload a file', function(assert) {
   });
 });
 
-test('should be able to POST to a presigned URL', function(assert) {
+test('create a presigned URL policy and POST a file with that policy', function(assert) {
   
+  // the name of the file as it will appear in the bucket after an upload
   const filename = 'signedtest.txt';
   var checksum;
 
-  // Note making a bucket is not idempotent.  Depending on test above for that.
-  // making an existing bucket throws an error.  XXX write code for this too
+  // NOTE: making a bucket is not idempotent.  Depending on test above for that.
+  // making an existing bucket throws an error.  XXX write helper function for this
   // All APIs in 2017 should be as idempotent as possible
 
   var policy = minio.newPostPolicy();
@@ -70,12 +74,12 @@ test('should be able to POST to a presigned URL', function(assert) {
   policy.setKey(filename);
   
   // Policy restricted for incoming objects with keyPrefix.
-  // XXX I have no idea what this does but it does rename the file set above
+  // NOTE: I have no idea what this does but it does rename the file set above
   //policy.setKeyStartsWith('keyPrefix');
 
   // Policy expires in 10 days.
-  // Note setting it in the near future when you aren't in Greenwich made me find this bug:
-  // https://github.com/minio/minio-js/issues/545
+  // XXX BUG: setting it in the near future when you aren't in Greenwich 
+  // made me find this: // https://github.com/minio/minio-js/issues/545
   var expires = new Date;
   expires.setSeconds(24 * 60 * 60 * 10);
   policy.setExpires(expires);
@@ -86,7 +90,7 @@ test('should be able to POST to a presigned URL', function(assert) {
   // Only allow content size in range 1B to 1MB.
   policy.setContentLengthRange(1, 1024*1024);
 
-  // create policy (would be done on your app server)
+  // create policy (would typically be done on your app server)
   return minio.presignedPostPolicyAsync(policy)
   .spread((url, formData) => {
     assert.ok(url.length > 1, 'URL is non empty');
@@ -96,6 +100,9 @@ test('should be able to POST to a presigned URL', function(assert) {
       req.field(key, value);
     });
     // upload file via the created signed policy.  This would be done in the browser
+    // or some other untrusted third party
+    // NOTE:  browsers don't allow you to use the .attach() API.  You
+    // must do get the file the browser way.
     return req 
     .set('Content-Type', 'text/plain')
     .attach('file', 'test/data/test.txt');
@@ -103,7 +110,7 @@ test('should be able to POST to a presigned URL', function(assert) {
     assert.ok(r.ok, 'POST should have returned ok');
     checksum = JSON.parse(r.header.etag);
 
-    // the following is run on your sever to verify the upload was completed
+    // the following is run on your server to verify the upload was completed
     // by the browser.  your app API should ask the browser to supply
     // the checksum
     return minio.statObjectAsync(bucket, filename);
@@ -129,8 +136,9 @@ test('should be able to POST to a presigned URL', function(assert) {
 });
 
 
-test('should be able to PUT to a presigned URL', function(assert) {
+test('PUT a file to a presigned URL', function(assert) {
   
+  // the name of the file as it will appear in the bucket after an upload
   const filename = 'signedtest2.txt';
 
   return minio.presignedPutObjectAsync(bucket, filename, 60)
