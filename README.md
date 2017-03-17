@@ -1,6 +1,8 @@
 # quickstart-minio
 A quickstart guide for using minio.  Also works as a quickstart guide for S3.  Documented with working code that you can easily run the code anywhere on any computer that can run Docker.
 
+This quickstart demonstrates how the server side and client side works in the same executable unit test.  If you want to see the browser specific code, please see this example here:   https://github.com/harshavardhana/minio-js-browser-upload
+
 ## Running the quickstart
 This example runs two docker containers - the first container runs stock minio, the second container runs the javascript code as unit tests contained in the /test/ directory.   The unit tests demonstrate how to create storage a bucket, create an upload policy, and upload a file according to that policy.
 
